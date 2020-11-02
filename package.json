@@ -1,5 +1,8 @@
 {
   "name": "rendeer",
   "version": "1.0.0",
-  "main": "build/rendeer.js"
+  "main": "build/rendeer.js",
+  "files": [
+    "build/rendeer.js"
+  ]
 }
