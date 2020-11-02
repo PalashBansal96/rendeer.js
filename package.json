@@ -1,0 +1,5 @@
+{
+  "name": "rendeer",
+  "version": "1.0.0",
+  "main": "build/rendeer.js"
+}
