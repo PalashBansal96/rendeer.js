@@ -424,7 +424,7 @@ Object.defineProperty( SceneNode.prototype, 'color', {
 });
 
 /**
-* This number is the 4º component of color but can be accessed directly 
+* This number is the 4ï¿½ component of color but can be accessed directly 
 * @property opacity {number}
 */
 Object.defineProperty(SceneNode.prototype, 'opacity', {
@@ -1278,7 +1278,7 @@ SceneNode.prototype.propagate = function(method, params)
 	for(var i = 0, l = this.children.length; i < l; i++)
 	{
 		var node = this.children[i];
-		if(!node) //¿?
+		if(!node) //ï¿½?
 			continue;
 		//has method
 		if(node[method])
@@ -2671,7 +2671,7 @@ Object.defineProperty( Material.prototype, "color", {
 });
 
 /**
-* This number is the 4º component of color but can be accessed directly 
+* This number is the 4ï¿½ component of color but can be accessed directly 
 * @property opacity {number}
 */
 Object.defineProperty( Material.prototype, 'opacity', {
@@ -2680,7 +2680,7 @@ Object.defineProperty( Material.prototype, 'opacity', {
 	enumerable: true //avoid problems
 });
 
-Material.prototype.render = function( renderer, model, mesh, indices_name, group_index )
+Material.prototype.render = function( renderer, model, mesh, indices_name, group_index, node )
 {
 	//get shader
 	var shader_name = this.shader_name || renderer.default_shader_name || RD.Material.default_shader_name;
@@ -2721,7 +2721,8 @@ Material.prototype.render = function( renderer, model, mesh, indices_name, group
 	renderer.enableItemFlags( this );
 
 	renderer._uniforms.u_model.set( model );
-	shader.uniforms( renderer._uniforms ); //globals
+	renderer.setShaderUniforms(shader, node);
+	// shader.uniforms( renderer._uniforms ); //globals
 	shader.uniforms( this.uniforms ); //locals
 
 	var group = null;
@@ -3116,7 +3117,7 @@ Renderer.prototype.renderNode = function(node, camera)
 			var prim = node.primitives[i];
 			var material = RD.Materials[ prim.material ];
 			if(material)
-				this.renderMeshWithMaterial( node._global_matrix, mesh, material, "triangles", i );
+				this.renderMeshWithMaterial( node._global_matrix, mesh, material, "triangles", i, node );
 		}
 		return;
 	}
@@ -3128,7 +3129,7 @@ Renderer.prototype.renderNode = function(node, camera)
 		{
 			if(material.render)
 			{
-				this.renderMeshWithMaterial( node._global_matrix, mesh, material, node.indices, node.submesh );
+				this.renderMeshWithMaterial( node._global_matrix, mesh, material, node.indices, node.submesh, node );
 				return;
 			}
 			else
@@ -3209,15 +3210,8 @@ Renderer.prototype.renderNode = function(node, camera)
 	
 	if(node.onRender)
 		node.onRender(this, camera, shader);
-	
-	shader.uniforms( this._uniforms ); //globals
-	if(!this.skip_node_uniforms)
-		shader.uniforms( node._uniforms ); //node specifics
-	if(node.onShaderUniforms) //in case the node wants to add extra shader uniforms that need to be computed at render time
-		node.onShaderUniforms(this, shader);
 
-	if(this.onNodeShaderUniforms) //in case the node wants to add extra shader uniforms that need to be computed at render time
-		this.onNodeShaderUniforms(this, shader, node );
+	this.setShaderUniforms(shader, node);
 
 	var group = null;
 	if( node.submesh != null && mesh.info && mesh.info.groups && mesh.info.groups[ node.submesh ] )
@@ -3249,6 +3243,20 @@ Renderer.prototype.renderNode = function(node, camera)
 	this.draw_calls += 1;
 }
 
+Renderer.prototype.setShaderUniforms = function(shader, node) {
+	shader.uniforms(this._uniforms); //globals
+
+	if(!node) return ;
+
+	if (!this.skip_node_uniforms)
+		shader.uniforms(node._uniforms); //node specifics
+	if (node.onShaderUniforms) //in case the node wants to add extra shader uniforms that need to be computed at render time
+		node.onShaderUniforms(this, shader);
+
+	if (this.onNodeShaderUniforms) //in case the node wants to add extra shader uniforms that need to be computed at render time
+		this.onNodeShaderUniforms(this, shader, node);
+}
+
 Renderer.prototype.renderMesh = function( model, mesh, texture, color, shader, mode, index_buffer_name, group_index )
 {
 	if(!mesh)
@@ -3267,10 +3275,10 @@ Renderer.prototype.renderMesh = function( model, mesh, texture, color, shader, m
 	this.draw_calls += 1;
 }
 
-Renderer.prototype.renderMeshWithMaterial = function( model, mesh, material, index_buffer_name, group_index )
+Renderer.prototype.renderMeshWithMaterial = function( model, mesh, material, index_buffer_name, group_index, node )
 {
 	if(material.render)
-		material.render( this, model, mesh, index_buffer_name, group_index );
+		material.render( this, model, mesh, index_buffer_name, group_index, node );
 }
 
 
