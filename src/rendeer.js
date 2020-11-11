@@ -1255,7 +1255,7 @@ SceneNode.prototype.findNodesByFilter = function( filter_func, layers, result )
 	for(var i = 0, l = this.children.length; i < l; i++)
 	{
 		var node = this.children[i];
-		if( !(node.layer & layers) )
+		if( !(node.layers & layers) )
 			continue;
 
 		if( !filter_func || filter_func( node ) )
