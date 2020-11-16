@@ -1347,11 +1347,8 @@ SceneNode.prototype.updateBoundingBox = function( ignore_children )
 		var child_bb = child.updateBoundingBox();
 		if(!child_bb)
 			continue;
-		if(!bb){
-			bb = BBox.create();
-			this.bounding_box = BBox.transformMat4( bb, bb, model );
-		}
-		BBox.merge( bb, bb, child_bb );
+		if(!bb) bb = this.bounding_box = BBox.clone(child_bb);
+		else BBox.merge( bb, bb, child_bb );
 	}
 
 	return bb;
