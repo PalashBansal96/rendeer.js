@@ -1256,7 +1256,7 @@ SceneNode.prototype.findNodesByFilter = function( filter_func, layers, result )
 	for(var i = 0, l = this.children.length; i < l; i++)
 	{
 		var node = this.children[i];
-		if( !(node.layer & layers) )
+		if( !(node.layers & layers) )
 			continue;
 
 		if( !filter_func || filter_func( node ) )
@@ -1347,8 +1347,10 @@ SceneNode.prototype.updateBoundingBox = function( ignore_children )
 		var child_bb = child.updateBoundingBox();
 		if(!child_bb)
 			continue;
-		if(!bb)
-			bb = this.bounding_box = BBox.create();
+		if(!bb){
+			bb = BBox.create();
+			this.bounding_box = BBox.transformMat4( bb, bb, model );
+		}
 		BBox.merge( bb, bb, child_bb );
 	}
 
@@ -5866,7 +5868,7 @@ Gizmo.prototype.getTargetBaseNodes = function()
 		var n = targets[i];
 		if(!(n.layers & this.layers))
 			continue;
-		if(isParentSelected(n.parentNode))
+		if(n.parentNode && isParentSelected(n.parentNode))
 			continue;
 		r.push(n);
 	}
