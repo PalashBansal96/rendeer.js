@@ -276,7 +276,7 @@ Gizmo.prototype.getTargetBaseNodes = function()
 		var n = targets[i];
 		if(!(n.layers & this.layers))
 			continue;
-		if(isParentSelected(n.parentNode))
+		if(n.parentNode && isParentSelected(n.parentNode))
 			continue;
 		r.push(n);
 	}
