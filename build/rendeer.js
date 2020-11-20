@@ -1861,7 +1861,7 @@ Camera.prototype.orthographic = function(frustum_size, near, far, aspect)
 {
 	this.type = Camera.ORTHOGRAPHIC;
 	this._frustum_size = frustum_size;
-	if(arguments.lenth > 1)
+	if(arguments.length > 1)
 	{
 		this._near = near;
 		this._far = far;
